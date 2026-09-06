@@ -13,8 +13,17 @@
 
   const visibleText = (element) => (element.textContent || element.value || "").replace(/\s+/g, " ").trim();
 
+  const isFirefoxDataConsentEnv = () => {
+    try {
+      return new URL(chrome.runtime.getURL("")).protocol === "moz-extension:";
+    } catch {
+      return false;
+    }
+  };
+
   const proceedMfaRegistration = (proceedBtn) => {
     let transitionObserved = false;
+    const firefoxDataConsent = isFirefoxDataConsentEnv();
     const markTransition = () => {
       transitionObserved = true;
     };
@@ -23,16 +32,17 @@
     window.addEventListener("pagehide", markTransition, { once: true });
 
     chrome.runtime.sendMessage({ type: "auth-mfa-click-proceed" }).then((response) => {
+      if (firefoxDataConsent) return; // All Firefox submissions go through the permission-checked background.
       if ((!response?.ok || !response.started) && !transitionObserved) {
         proceedBtn.click();
       }
     }).catch(() => {
-      if (!transitionObserved) proceedBtn.click();
+      if (!firefoxDataConsent && !transitionObserved) proceedBtn.click();
     });
 
     window.setTimeout(() => {
       if (transitionObserved || !document.contains(proceedBtn)) return;
-      proceedBtn.click();
+      if (!firefoxDataConsent) proceedBtn.click();
     }, 500);
 
     window.setTimeout(() => {
@@ -55,6 +65,9 @@
   const submitIdpLogin = (loginSubmit) => {
     const form = loginSubmit.form || loginSubmit.closest("form");
     let submissionObserved = false;
+    let permissionBlocked = false;
+    // Chromeの既存fallbackは維持する一方、Firefoxではbackgroundの同意確認を迂回する直接送信を許可しない。
+    const firefoxDataConsent = isFirefoxDataConsentEnv();
     const markSubmitted = () => {
       submissionObserved = true;
     };
@@ -62,27 +75,67 @@
     window.addEventListener("pagehide", markSubmitted, { once: true });
 
     chrome.runtime.sendMessage({ type: "auth-submit-idp" }).then((submitResponse) => {
-      if ((!submitResponse?.ok || !submitResponse.started) && !submissionObserved) {
+      if (submitResponse?.permissionRequired) {
+        permissionBlocked = true;
+        return;
+      }
+      if (!submitResponse?.ok) {
+        if (firefoxDataConsent) {
+          permissionBlocked = true;
+          return;
+        }
+        if (!submissionObserved) loginSubmit.click();
+        return;
+      }
+      if (!submitResponse.started && !submissionObserved) {
         loginSubmit.click();
       }
     }).catch(() => {
+      if (firefoxDataConsent) {
+        permissionBlocked = true;
+        return;
+      }
       if (!submissionObserved) loginSubmit.click();
     });
 
     window.setTimeout(() => {
-      if (submissionObserved || !document.contains(loginSubmit)) return;
-      loginSubmit.click();
+      if (permissionBlocked || submissionObserved || !document.contains(loginSubmit)) return;
+      if (!firefoxDataConsent) {
+        loginSubmit.click();
+      }
     }, 500);
 
     window.setTimeout(() => {
-      if (submissionObserved ||
+      if (permissionBlocked || submissionObserved ||
           !document.contains(loginSubmit) ||
           !(form instanceof HTMLFormElement)) return;
-      if (typeof form.requestSubmit === "function") {
-        form.requestSubmit(loginSubmit);
-      } else {
-        loginSubmit.click();
+      if (!firefoxDataConsent) {
+        if (typeof form.requestSubmit === "function") {
+          form.requestSubmit(loginSubmit);
+        } else {
+          loginSubmit.click();
+        }
+        return;
       }
+      chrome.runtime.sendMessage({ type: "auth-submit-idp" }).then((response) => {
+        if (response?.permissionRequired) {
+          permissionBlocked = true;
+          return;
+        }
+        if (!response?.ok) {
+          permissionBlocked = true;
+          return;
+        }
+        if (!response.started && !submissionObserved) {
+          if (typeof form.requestSubmit === "function") {
+            form.requestSubmit(loginSubmit);
+          } else {
+            loginSubmit.click();
+          }
+        }
+      }).catch(() => {
+        permissionBlocked = true;
+      });
     }, 1200);
   };
 
@@ -189,18 +242,39 @@
 
   if (location.origin === "https://auth-mfa.auth.osaka-u.ac.jp") {
     let autoCollectRegistration = Promise.resolve();
+    let autoCollectPermissionBlocked = false;
     if (location.hash === "#auto-collect") {
       sessionStorage.setItem("koan-plus-mfa-auto-collect", "true");
       autoCollectRegistration = chrome.runtime.sendMessage({ type: "auth-mfa-register-auto-tab" })
-        .catch(() => undefined);
+        .then((response) => {
+          if (response?.permissionRequired || (isFirefoxDataConsentEnv() && !response?.ok)) {
+            autoCollectPermissionBlocked = true;
+            sessionStorage.removeItem("koan-plus-mfa-auto-collect");
+          }
+          return response;
+        })
+        .catch(() => {
+          // Firefoxでは失敗後にこのフラグを残すと次ページで自動登録が再開するため、同意を確認できない場合は破棄する。
+          if (isFirefoxDataConsentEnv()) {
+            autoCollectPermissionBlocked = true;
+            sessionStorage.removeItem("koan-plus-mfa-auto-collect");
+          }
+          return undefined;
+        });
       history.replaceState(null, document.title, location.pathname + location.search);
     }
 
-    autoCollectRegistration.then(() =>
-      chrome.runtime.sendMessage({ type: "auth-mfa-check-auto-tab" })
-    ).then((response) => {
+    autoCollectRegistration.then(() => {
+      if (autoCollectPermissionBlocked) return null;
+      return chrome.runtime.sendMessage({ type: "auth-mfa-check-auto-tab" });
+    }).then((response) => {
+      if (autoCollectPermissionBlocked || !response) return;
+      if (isFirefoxDataConsentEnv() && !response.ok) {
+        sessionStorage.removeItem("koan-plus-mfa-auto-collect");
+        return;
+      }
       const isAutoCollect = response?.isAutoCollect === true ||
-        sessionStorage.getItem("koan-plus-mfa-auto-collect") === "true";
+        (!isFirefoxDataConsentEnv() && sessionStorage.getItem("koan-plus-mfa-auto-collect") === "true");
 
       const isSuccessPage = document.body.innerText.includes("MFA登録\t：\t登録済") ||
         document.body.innerText.includes("MFA登録 ： 登録済");
@@ -281,7 +355,14 @@
             if (registerBtn instanceof HTMLElement) {
               sessionStorage.setItem(MFA_PENDING_TRANSACTION_KEY, saveRes.transactionId);
               setTimeout(() => {
-                registerBtn.click();
+                if (!isFirefoxDataConsentEnv()) {
+                  registerBtn.click();
+                  return;
+                }
+                // Consent or the registration flow may have been cancelled during the delay.
+                chrome.runtime.sendMessage({ type: "auth-mfa-check-auto-tab" }).then((state) => {
+                  if (state?.ok && state.isAutoCollect) registerBtn.click();
+                }).catch(() => {});
               }, 1200);
             }
           } else if (registerBtn) {

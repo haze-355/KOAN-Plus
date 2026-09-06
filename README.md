@@ -4,12 +4,14 @@
 
 [English](./README.en.md) · [Chrome Web Store](https://chromewebstore.google.com/detail/koan-plus/mpppnbfaakngenflnnoclhbckmjdngkm) · [使い方](./docs/user-guide.md) · [変更履歴](./CHANGELOG.md)
 
-大阪大学の **KOANとCLEの情報をまとめて確認できる、非公式のChrome拡張機能**です。
+大阪大学の **KOANとCLEの情報をまとめて確認できる、非公式のブラウザ拡張機能**です。
 課題の締切、休講・教室変更、連絡・掲示、成績を、デスクトップのダッシュボードで確認できます。
 通常のKOANやCLEの画面デザインは変更しません。MITライセンスのオープンソースです。
 
-このREADMEはリポジトリの最新実装を説明しています。ストア公開前の変更は [Unreleased](./CHANGELOG.md#unreleased) にまとめています。
-現在のリポジトリのバージョンは **1.5.0** です。ストア公開済みバージョンとは異なる場合があります。
+このREADMEはリポジトリの最新実装を説明しています。各バージョンの公開状況は [変更履歴](./CHANGELOG.md) にまとめています。
+現在のリポジトリのバージョンは **1.6.0** です。ストア公開済みバージョンとは異なる場合があります。
+
+1.6.0にFirefox 140以降（デスクトップ）への対応を含めました。両ストアへは未提出で、Firefox向けの署名済み配布版はまだありません。審査提出済みのChrome版1.5.0とは別の配布物です。[ビルドと確認手順](./docs/firefox-verification.md)、[Firefoxへの公開手順](./docs/firefox-publishing.md)、[審査用の再ビルド手順](./BUILDING.md)を参照してください。
 
 ## できること
 

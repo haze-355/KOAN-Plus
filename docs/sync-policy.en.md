@@ -17,6 +17,11 @@ expensive synchronization tasks.
 - Concurrent KOAN portal authentication checks share an active request. CLE
   readiness checks do the same for each tab. Completed authentication results
   are not cached.
+- Each service retains the ID of its extension-owned authentication tab in
+  browser session storage. Retries after a polling timeout or background restart
+  reuse that tab without navigating away from an unfinished OTP form. Closed
+  tabs or tabs moved to unrelated sites are replaced; successful authentication
+  releases ownership. Polling deadlines and synchronization backoff are unchanged.
 - KOAN checks the current login state immediately. While awaiting login, it
   checks the portal every five seconds for up to 90 seconds. Completion may be
   detected up to approximately four seconds later than with the previous

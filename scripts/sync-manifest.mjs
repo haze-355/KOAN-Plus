@@ -66,6 +66,22 @@ export function assertManifestParity(devManifest, productionManifest) {
   }
 }
 
+export function assertFirefoxManifestParity(chromeManifest, firefoxManifest) {
+  const chromeShared = { ...chromeManifest };
+  const firefoxShared = { ...firefoxManifest };
+  for (const manifest of [chromeShared, firefoxShared]) {
+    delete manifest.background;
+    delete manifest.minimum_chrome_version;
+    delete manifest.browser_specific_settings;
+  }
+  chromeShared.permissions = chromeManifest.permissions.filter(permission => permission !== "downloads.ui");
+  const chromeFields = flatten(chromeShared);
+  const firefoxFields = flatten(firefoxShared);
+  const differences = [...new Set([...Object.keys(chromeFields), ...Object.keys(firefoxFields)])]
+    .filter(path => JSON.stringify(chromeFields[path]) !== JSON.stringify(firefoxFields[path]));
+  if (differences.length) throw new Error(`Chrome and Firefox manifests drifted: ${differences.join(", ")}`);
+}
+
 export async function syncManifests(root = projectRoot) {
   const pkg = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
   const { version, description } = pkg;
@@ -82,6 +98,12 @@ export async function syncManifests(root = projectRoot) {
   await writeFile(prodManifestPath, JSON.stringify(prodManifest, null, 2) + "\n");
 
   assertManifestParity(devManifest, prodManifest);
+  const firefoxManifestPath = join(root, "public/manifest.firefox.json");
+  const firefoxManifest = JSON.parse(await readFile(firefoxManifestPath, "utf8"));
+  firefoxManifest.version = version;
+  firefoxManifest.description = description;
+  assertFirefoxManifestParity(prodManifest, firefoxManifest);
+  await writeFile(firefoxManifestPath, JSON.stringify(firefoxManifest, null, 2) + "\n");
   console.log(`Synced version ${version} and description to manifest files.`);
 }
 

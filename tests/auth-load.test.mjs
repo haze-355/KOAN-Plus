@@ -21,9 +21,9 @@ function loginHarness(ready = false) {
   const ensureTab = vi.fn(async () => ({ id: 1 }));
   const noop = async () => {};
   const loginSource = source.slice(source.indexOf("const KOAN_LOGIN_POLL_INTERVAL_MS"), source.indexOf("const cleProbeTasks ="));
-  const login = new Function("probeKoanLogin", "openLoginTab", "wait", "tabExists", "ensureKoanTab", "readManualFlow", "clearManualFlow", "focusTab", "waitForTabComplete", "returnToDashboard", "chrome", "KOAN_PORTAL_URL", `let koanLoginTask; ${loginSource}; return ensureKoanLogin;`)(
+  const login = new Function("probeKoanLogin", "openLoginTab", "wait", "tabExists", "ensureKoanTab", "readManualFlow", "clearManualFlow", "focusTab", "waitForTabComplete", "returnToDashboard", "chrome", "KOAN_PORTAL_URL", "rememberLoginTab", `let koanLoginTask; ${loginSource}; return ensureKoanLogin;`)(
     probe, open, ms => new Promise(resolve => setTimeout(resolve, ms)), exists, ensureTab,
-    async () => null, noop, noop, noop, noop, { tabs: { remove: noop } }, portalUrl,
+    async () => null, noop, noop, noop, noop, { tabs: { remove: noop } }, portalUrl, noop,
   );
   return { login, probe, open, exists };
 }

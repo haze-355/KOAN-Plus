@@ -30,16 +30,17 @@ export async function createThirdPartyNotices(root = projectRoot) {
   return sections.join("\n\n----------------------------------------\n\n") + "\n";
 }
 
-export async function buildNotices(root = projectRoot) {
+export async function buildNotices(root = projectRoot, outputDirectory = "dist") {
   // Validate every notice before writing a distributable file.
   const notices = await createThirdPartyNotices(root);
-  const destination = join(root, "dist");
+  const destination = join(root, outputDirectory);
   await mkdir(destination, { recursive: true });
   await copyFile(join(root, "LICENSE"), join(destination, "LICENSE"));
   await writeFile(join(destination, "THIRD_PARTY_NOTICES.txt"), notices);
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  await buildNotices();
-  console.log("Included project license and third-party notices in dist.");
+  const outputDirectory = process.argv[2] || "dist";
+  await buildNotices(projectRoot, outputDirectory);
+  console.log(`Included project license and third-party notices in ${outputDirectory}.`);
 }

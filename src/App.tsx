@@ -6,6 +6,7 @@ import {
   type AnchorHTMLAttributes,
   type CSSProperties,
   type ReactNode,
+  type MouseEvent,
 } from "react";
 import DOMPurify from "dompurify";
 import {
@@ -76,8 +77,11 @@ import {
   ensureCleLogin,
   ensureKoanLogin,
   academicLinkUrl,
+  isFirefoxDataConsentEnv,
   loadAuthSettings,
   refreshCleLogin,
+  hasDataCollectionPermission,
+  requestAuthenticationInfoPermission,
   saveAuthSettings,
   getSavedMfaSecrets,
   checkLoginStatus,
@@ -1374,17 +1378,19 @@ function App({ initialView = "dashboard" }: { initialView?: AppView }) {
   );
 }
 
-function getContactUrl() {
+function getContactUrl(includeUserAgent = true) {
   const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdo3KmL2KnbDLtqgQfjtqO2NG7W6M0rTVeEJ4I5aPyJ2HsQyA/viewform";
   const chromeObj = typeof window !== "undefined" ? (window as any).chrome : undefined;
   const version = chromeObj && chromeObj.runtime?.getManifest
     ? chromeObj.runtime.getManifest().version
     : packageJson.version;
-  const ua = typeof navigator !== "undefined" ? navigator.userAgent : "unknown";
 
   const params = new URLSearchParams();
   params.append("entry.206461699", version);
-  params.append("entry.673140482", ua);
+  if (includeUserAgent) {
+    const ua = typeof navigator !== "undefined" ? navigator.userAgent : "unknown";
+    params.append("entry.673140482", ua);
+  }
 
   return `${baseUrl}?${params.toString()}`;
 }
@@ -1404,7 +1410,23 @@ function Sidebar({
     ["settings", "設定"],
   ] as const;
 
-  const contactUrl = getContactUrl();
+  const firefox = isFirefoxDataConsentEnv();
+  const contactUrl = getContactUrl(!firefox);
+  const handleContactClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!firefox) return;
+    event.preventDefault();
+    // permission確認後ではpopupが遮断され得るため、Firefoxのuser activation中に空タブを確保する。
+    const contactWindow = window.open("about:blank", "_blank");
+    if (contactWindow) contactWindow.opener = null;
+    void hasDataCollectionPermission("technicalAndInteraction").then((includeUserAgent) => {
+      const url = getContactUrl(includeUserAgent);
+      if (contactWindow && !contactWindow.closed) {
+        contactWindow.location.href = url;
+      } else {
+        window.location.href = url;
+      }
+    });
+  };
 
   return (
     <aside className="app-sidebar">
@@ -1429,7 +1451,7 @@ function Sidebar({
         <small>外部リンク</small>
         <AuthenticatedLink href={PORTAL_URL} target="_blank">KOAN</AuthenticatedLink>
         <AuthenticatedLink href={CLE_MESSAGES_URL} target="_blank">CLE</AuthenticatedLink>
-        <ExternalLink href={contactUrl}>お問い合わせ</ExternalLink>
+        <ExternalLink href={contactUrl} onClick={firefox ? handleContactClick : undefined}>お問い合わせ</ExternalLink>
       </div>
     </aside>
   );
@@ -1760,10 +1782,15 @@ function Settings({
     }
   };
 
-  const handleStartRegister = () => {
+  const handleStartRegister = async () => {
+    if (!await requestAuthenticationInfoPermission()) {
+      setStatus("MFA自動登録を使用するには認証情報の利用許可が必要です。Firefoxの許可を確認してください。");
+      setShowMfaWizardModal(false);
+      return;
+    }
     setMfaRegistrationTimedOut(false);
     setMfaWizardStep("registering");
-    void startAutoCollect();
+    await startAutoCollect();
   };
 
   const closeMfaWizard = () => {
@@ -1818,23 +1845,33 @@ function Settings({
     }
   };
 
-  const save = () => run(
-    () => saveAuthSettings({
-      enabled: true,
-      id,
-      password,
-      totpSecret,
-      mfaConsent,
-      mfaEnabled: mfaEnabled && Boolean(hasSavedMfa || totpSecret.trim()),
-    }),
-    "端末内に暗号化して保存しました。",
-  );
+  const save = async () => {
+    if (!await requestAuthenticationInfoPermission()) {
+      setStatus("自動ログインを使用するには認証情報の利用許可が必要です。Firefoxの許可を確認してください。");
+      return;
+    }
+    await run(
+      () => saveAuthSettings({
+        enabled: true,
+        id,
+        password,
+        totpSecret,
+        mfaConsent,
+        mfaEnabled: mfaEnabled && Boolean(hasSavedMfa || totpSecret.trim()),
+      }),
+      "端末内に暗号化して保存しました。",
+    );
+  };
 
-  const toggleAutoLogin = (enabled: boolean) => {
+  const toggleAutoLogin = async (enabled: boolean) => {
     if (!settings.configured) {
       setSetupStarted(true);
       setSettings({ ...settings, enabled: true });
       setStatus("ログイン情報を保存してから自動ログインを有効にできます。");
+      return;
+    }
+    if (enabled && !await requestAuthenticationInfoPermission()) {
+      setStatus("自動ログインを使用するには認証情報の利用許可が必要です。Firefoxの許可を確認してください。");
       return;
     }
     setSettings({ ...settings, enabled });
@@ -1873,17 +1910,23 @@ function Settings({
     }
   };
 
-  const saveManualTotp = () => run(
-    () => saveAuthSettings({
-      enabled: settings.enabled,
-      id: "",
-      password: "",
-      totpSecret,
-      mfaConsent: true,
-      mfaEnabled: true,
-    }),
-    "TOTP シークレットを保存しました。",
-  );
+  const saveManualTotp = async () => {
+    if (!await requestAuthenticationInfoPermission()) {
+      setStatus("MFAを使用するには認証情報の利用許可が必要です。Firefoxの許可を確認してください。");
+      return;
+    }
+    await run(
+      () => saveAuthSettings({
+        enabled: settings.enabled,
+        id: "",
+        password: "",
+        totpSecret,
+        mfaConsent: true,
+        mfaEnabled: true,
+      }),
+      "TOTP シークレットを保存しました。",
+    );
+  };
 
   const cancelCredentialEdit = () => {
     setEditingCredentials(false);

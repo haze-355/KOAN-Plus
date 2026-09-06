@@ -1,7 +1,7 @@
 {
   "name": "koan-plus",
   "private": true,
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "A local-only academic dashboard for Osaka University KOAN and CLE.",
   "type": "module",
   "engines": {
@@ -9,15 +9,18 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/sync-manifest.mjs && tsc -b && vite build && node scripts/build-notices.mjs",
+    "build": "node scripts/sync-manifest.mjs && tsc -b && vite build && node scripts/build-notices.mjs && node -e \"import('node:fs/promises').then(fs=>fs.rm('dist/manifest.firefox.json',{force:true}))\"",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:ui": "playwright test",
-    "test:all": "npm test && npm run test:ui",
+    "test:ui": "playwright test --project=chromium",
+    "test:all": "npm test && playwright test",
     "preview": "vite preview",
     "zip": "npm run build && node scripts/build-zip.mjs",
-    "version": "node scripts/sync-manifest.mjs && git add manifest.json public/manifest.json",
-    "demo:store": "npm run build && node scripts/store-demo/serve.mjs"
+    "version": "node scripts/sync-manifest.mjs && git add manifest.json public/manifest.json public/manifest.firefox.json",
+    "demo:store": "npm run build && node scripts/store-demo/serve.mjs",
+    "build:firefox": "node scripts/sync-manifest.mjs && tsc -b && vite build --outDir dist-firefox && node scripts/prepare-firefox-build.mjs && node scripts/build-notices.mjs dist-firefox",
+    "zip:firefox": "npm run build:firefox && node scripts/build-zip.mjs dist-firefox koan-plus-firefox.zip",
+    "test:ui:firefox": "playwright test --project=firefox"
   },
   "dependencies": {
     "dompurify": "^3.4.14",

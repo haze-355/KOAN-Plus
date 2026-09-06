@@ -56,6 +56,20 @@ git status --short
 git diff --stat
 ```
 
+## Firefox対応の確認
+
+Firefox対応を変更する場合は、通常のチェックに加えて次を実行します。
+
+```sh
+npm run zip:firefox
+npx playwright install firefox
+npm run test:ui:firefox
+npx web-ext lint --source-dir dist-firefox
+```
+
+Chrome用は `dist/` / `koan-plus.zip`、Firefox用は `dist-firefox/` / `koan-plus-firefox.zip` へ出力します。両方にライセンスを同梱します。
+PlaywrightのFirefoxテストは合成データによるWeb UI検証です。拡張機能の権限ダイアログや大学サービスでの認証確認は [Firefox確認手順](./docs/firefox-verification.md) に沿って別に行ってください。
+
 ## テストfixtureと個人情報
 
 実在のKOAN/CLEデータをfixture、スクリーンショット、ログ、スナップショット、

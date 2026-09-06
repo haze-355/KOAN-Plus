@@ -783,3 +783,33 @@ test("course headings name both quarters in each semester", async ({ page }) => 
   await page.getByRole("button", { name: "授業", exact: true }).click();
   await expect(page.getByRole("heading", { name: "2026年 秋・冬学期" })).toBeVisible();
 });
+
+for (const allowTechnicalData of [false, true]) {
+  test(`Firefox contact link respects technical data consent (${allowTechnicalData}) without replacing the dashboard`, async ({ page, context }) => {
+    await seed(page, fixture());
+    await context.route("https://docs.google.com/**", route => route.fulfill({ contentType: "text/html", body: "<p>Synthetic contact form</p>" }));
+    await page.addInitScript(allowed => {
+      Object.defineProperty(navigator, "userAgent", { configurable: true, value: "Synthetic Firefox test" });
+      Object.defineProperty(window, "chrome", { configurable: true, value: {
+        runtime: {
+          getURL: () => "moz-extension://synthetic-uuid/",
+          getManifest: () => ({ version: "1.5.0" }),
+          sendMessage: async () => ({ ok: true, configured: false, enabled: false, mfaEnabled: false }),
+        },
+        permissions: { getAll: async () => ({ data_collection: allowed ? ["technicalAndInteraction"] : [] }) },
+      } });
+    }, allowTechnicalData);
+    await page.goto("/");
+    const dashboardUrl = page.url();
+    const [popup] = await Promise.all([
+      page.waitForEvent("popup"),
+      page.getByRole("link", { name: "お問い合わせ" }).click(),
+    ]);
+    await expect.poll(() => popup.url()).toContain("docs.google.com/forms/");
+    const params = new URL(popup.url()).searchParams;
+    expect(params.get("entry.206461699")).toBe("1.5.0");
+    expect(params.get("entry.673140482")).toBe(allowTechnicalData ? "Synthetic Firefox test" : null);
+    expect(page.url()).toBe(dashboardUrl);
+    await popup.close();
+  });
+}

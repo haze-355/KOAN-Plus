@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "KOAN Plus",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Development loader for KOAN Plus. Run npm run build and load dist/ for normal use.",
   "icons": {
     "16": "public/icon-16.png",

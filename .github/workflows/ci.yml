@@ -47,11 +47,18 @@ jobs:
       - name: Production build
         run: npm run build
 
+      - name: Firefox build and ZIP
+        run: npm run zip:firefox
+
   ui-e2e:
-    name: UI E2E (Chromium)
+    name: UI E2E (${{ matrix.browser }})
     needs: quality
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox]
     permissions:
       contents: read
     steps:
@@ -67,17 +74,17 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Run UI E2E tests
-        run: npm run test:ui
+        run: npx playwright test --project=${{ matrix.browser }}
 
       - name: Upload Playwright artifacts on failure
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: playwright-artifacts
+          name: playwright-artifacts-${{ matrix.browser }}
           path: |
             playwright-report/
             test-results/

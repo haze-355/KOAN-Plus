@@ -29,11 +29,11 @@ async function fixture({ license = true, version = "1.0.0" } = {}) {
 }
 
 describe("distribution notices", () => {
-  it("includes project, dependency, and inline icon notices without requiring dev-only packages", async () => {
+  it.each(["dist", "dist-firefox"])("includes project, dependency, and inline icon notices in %s", async outputDirectory => {
     const root = await fixture();
-    await buildNotices(root);
-    expect(await readFile(join(root, "dist/LICENSE"), "utf8")).toBe("Project license fixture");
-    const notices = await readFile(join(root, "dist/THIRD_PARTY_NOTICES.txt"), "utf8");
+    await buildNotices(root, outputDirectory);
+    expect(await readFile(join(root, outputDirectory, "LICENSE"), "utf8")).toBe("Project license fixture");
+    const notices = await readFile(join(root, outputDirectory, "THIRD_PARTY_NOTICES.txt"), "utf8");
     expect(notices).toContain("fixture-dependency 1.0.0");
     expect(notices).toContain("Dependency copyright and permission fixture");
     expect(notices).toContain("Icon license fixture");

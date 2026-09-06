@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import privacyDocument from "../PRIVACY.md?raw";
 import termsDocument from "../TERMS.md?raw";
-import { loadAuthSettings, saveAuthSettings } from "./auth";
+import { loadAuthSettings, requestAuthenticationInfoPermission, saveAuthSettings } from "./auth";
 import ThemeToggle, { loadTheme, saveTheme } from "./ThemeToggle";
 import { useEscapeKey } from "./useEscapeKey";
 
@@ -50,6 +50,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     setSaving(true);
     setStatus("");
     try {
+      if (!await requestAuthenticationInfoPermission()) {
+        setStatus("自動ログインを使用するには認証情報の利用許可が必要です。Firefoxの許可を確認してください。");
+        return;
+      }
       await saveAuthSettings({
         enabled: true,
         id: id.trim(),

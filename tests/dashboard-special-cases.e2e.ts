@@ -238,7 +238,8 @@ test("desktop schedule rows contain room and change details without overlapping 
     nextTop: rows[i + 1].getBoundingClientRect().top,
   })));
   for (const row of bounds) {
-    expect(row.contentBottom).toBeLessThanOrEqual(row.bottom);
-    expect(row.bottom).toBeLessThanOrEqual(row.nextTop);
+    // Firefox can round two measurements of a shared edge differently (<0.001 CSS px).
+    expect(row.contentBottom).toBeLessThanOrEqual(row.bottom + 0.01);
+    expect(row.bottom).toBeLessThanOrEqual(row.nextTop + 0.01);
   }
 });

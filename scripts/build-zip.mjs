@@ -4,8 +4,9 @@ import { fileURLToPath } from "node:url";
 import { zipSync } from "fflate";
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
-const distDir = join(projectRoot, "dist");
-const outputPath = join(projectRoot, "koan-plus.zip");
+const args = process.argv.slice(2);
+const distDir = args.length >= 1 ? join(projectRoot, args[0]) : join(projectRoot, "dist");
+const outputPath = args.length >= 2 ? join(projectRoot, args[1]) : join(projectRoot, "koan-plus.zip");
 
 await rm(outputPath, { force: true });
 

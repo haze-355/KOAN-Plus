@@ -2,7 +2,21 @@
   "manifest_version": 3,
   "name": "KOAN Plus",
   "version": "1.6.0",
-  "minimum_chrome_version": "102",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "@koan-plus.haze-355",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ],
+        "optional": [
+          "authenticationInfo",
+          "technicalAndInteraction"
+        ]
+      }
+    }
+  },
   "icons": {
     "16": "icon-16.png",
     "32": "icon-32.png",
@@ -19,14 +33,15 @@
     }
   },
   "background": {
-    "service_worker": "background.js"
+    "scripts": [
+      "background.js"
+    ]
   },
   "permissions": [
     "scripting",
     "storage",
     "tabs",
-    "downloads",
-    "downloads.ui"
+    "downloads"
   ],
   "host_permissions": [
     "https://koan.osaka-u.ac.jp/*",

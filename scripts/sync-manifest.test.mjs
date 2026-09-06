@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   assertManifestParity,
+  assertFirefoxManifestParity,
   manifestParityDiff,
 } from "./sync-manifest.mjs";
 
@@ -40,4 +41,12 @@ describe("manifest parity", () => {
       { ...production, name: "Drifted" },
     )).toThrow("name");
   });
+});
+
+it("keeps Firefox shared fields and permissions in sync while allowing browser-specific metadata", async () => {
+  const chrome = JSON.parse(await readFile(join(projectRoot, "public/manifest.json"), "utf8"));
+  const firefox = JSON.parse(await readFile(join(projectRoot, "public/manifest.firefox.json"), "utf8"));
+  expect(() => assertFirefoxManifestParity(chrome, firefox)).not.toThrow();
+  expect(() => assertFirefoxManifestParity(chrome, { ...firefox, host_permissions: [] })).toThrow("host_permissions");
+  expect(() => assertFirefoxManifestParity(chrome, { ...firefox, permissions: chrome.permissions })).toThrow("permissions");
 });

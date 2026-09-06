@@ -8,6 +8,10 @@ export default defineConfig({
   testMatch: "**/*.e2e.ts",
   fullyParallel: true,
   reporter: "list",
+  projects: [
+    { name: "chromium", use: { browserName: "chromium" } },
+    { name: "firefox", use: { browserName: "firefox" } },
+  ],
   use: {
     baseURL,
     colorScheme: "light",

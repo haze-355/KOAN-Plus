@@ -6,6 +6,49 @@ export type AuthSettings = {
   idHint: string;
 };
 
+type DataCollectionPermissions = {
+  data_collection?: string[];
+};
+
+export function isFirefoxDataConsentEnv(): boolean {
+  if (typeof chrome === "undefined" || typeof chrome.runtime?.getURL !== "function") return false;
+  try {
+    return new URL(chrome.runtime.getURL("")).protocol === "moz-extension:";
+  } catch {
+    return false;
+  }
+}
+
+async function getDataCollectionPermissions(): Promise<string[] | null> {
+  const firefox = isFirefoxDataConsentEnv();
+  if (typeof chrome === "undefined" || typeof chrome.permissions?.getAll !== "function") {
+    return firefox ? [] : null;
+  }
+  try {
+    const permissions = await chrome.permissions.getAll() as DataCollectionPermissions;
+    if (!Object.prototype.hasOwnProperty.call(permissions, "data_collection")) return firefox ? [] : null;
+    return Array.isArray(permissions.data_collection) ? permissions.data_collection : [];
+  } catch {
+    return firefox ? [] : null;
+  }
+}
+
+export async function hasDataCollectionPermission(type: string): Promise<boolean> {
+  const permissions = await getDataCollectionPermissions();
+  return permissions === null || permissions.includes(type);
+}
+
+export async function requestAuthenticationInfoPermission(): Promise<boolean> {
+  if (!isFirefoxDataConsentEnv()) return true;
+  if (typeof chrome.permissions?.request !== "function") return false;
+  try {
+    // 事前確認をawaitするとuser activationを失う可能性があるため、Firefoxではrequestを最初に呼ぶ。
+    return await chrome.permissions.request({ data_collection: ["authenticationInfo"] });
+  } catch {
+    return false;
+  }
+}
+
 type AuthResponse = AuthSettings & {
   ok: boolean;
   error?: string;
@@ -29,7 +72,7 @@ function requireRuntimeResponse<T>(response: T | null | undefined): T {
 
 async function sendAuthMessage(message: unknown): Promise<AuthResponse> {
   if (typeof chrome === "undefined" || !chrome.runtime?.sendMessage) {
-    throw new Error("自動ログイン設定はChrome拡張機能から開いてください。");
+    throw new Error("自動ログイン設定はブラウザ拡張機能から開いてください。");
   }
   const response = requireRuntimeResponse(
     await chrome.runtime.sendMessage(message) as AuthResponse | null | undefined,

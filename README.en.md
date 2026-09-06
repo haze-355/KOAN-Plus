@@ -4,10 +4,12 @@
 
 [日本語](./README.md) · [Chrome Web Store](https://chromewebstore.google.com/detail/koan-plus/mpppnbfaakngenflnnoclhbckmjdngkm) · [User guide (Japanese)](./docs/user-guide.md) · [Changelog (Japanese)](./CHANGELOG.md)
 
-KOAN Plus is an **unofficial Chrome extension for viewing Osaka University's KOAN and CLE information together**. Check assignment deadlines, class cancellations, room changes, announcements, and grades in a desktop dashboard.
+KOAN Plus is an **unofficial browser extension for viewing Osaka University's KOAN and CLE information together**. Check assignment deadlines, class cancellations, room changes, announcements, and grades in a desktop dashboard.
 
-It leaves the ordinary KOAN and CLE page designs unchanged. The source code is available under the MIT license. This README describes the latest repository implementation; changes not yet published to the store are listed under [Unreleased](./CHANGELOG.md#unreleased).
-The repository version is **1.5.0**; the published store version may differ.
+It leaves the ordinary KOAN and CLE page designs unchanged. The source code is available under the MIT license. This README describes the latest repository implementation; version and publication status are recorded in the [changelog](./CHANGELOG.md).
+The repository version is **1.6.0**; the published store version may differ.
+
+Version 1.6.0 includes desktop Firefox 140+ support. It has not been submitted to either store; no signed Firefox distribution is available yet. It is separate from the Chrome 1.5.0 package submitted for review. See the [verification guide](./docs/firefox-verification.md), [publication guide](./docs/firefox-publishing.md) (Japanese), and [source build instructions for reviewers](./BUILDING.md).
 
 ## What you can do
 
