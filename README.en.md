@@ -9,7 +9,7 @@ KOAN Plus is an **unofficial browser extension for viewing Osaka University's KO
 It leaves the ordinary KOAN and CLE page designs unchanged. The source code is available under the MIT license. This README describes the latest repository implementation; version and publication status are recorded in the [changelog](./CHANGELOG.md).
 The repository version is **1.6.0**; the published store version may differ.
 
-Version 1.6.0 includes desktop Firefox 140+ support. It has not been submitted to either store; no signed Firefox distribution is available yet. It is separate from the Chrome 1.5.0 package submitted for review. See the [verification guide](./docs/firefox-verification.md), [publication guide](./docs/firefox-publishing.md) (Japanese), and [source build instructions for reviewers](./BUILDING.md).
+Version 1.6.0 includes desktop Firefox 140+ support. Chrome 1.6.0 was submitted for review on September 7, 2026, with automatic publication after approval. Chrome 1.5.0 remains the published version. Firefox has not been submitted, and no signed Firefox distribution is available yet. See the [Chrome submission record](./docs/chrome-submission-1.6.0.md) (Japanese). See the [verification guide](./docs/firefox-verification.md), [publication guide](./docs/firefox-publishing.md) (Japanese), and [source build instructions for reviewers](./BUILDING.md).
 
 ## What you can do
 

@@ -1,6 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title">
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title">
   <title id="title">KOAN Plus icon</title>
-  <rect x="24" y="24" width="976" height="976" rx="224" fill="#fbfaff" stroke="#eceaf4" stroke-width="32"/>
-  <path d="M250 244h126v220l202-220h158L500 492l250 288H590L418 572l-42 44v164H250V244Z" fill="#35365f"/>
-  <path d="M710 286h62v92h92v62h-92v92h-62v-92h-92v-62h92v-92Z" fill="#ff855f"/>
+  <desc>A compact geometric K with a separate coral plus. Open spacing and restrained corner rounding preserve clarity at small sizes.</desc>
+  <g id="Icon-background">
+    <rect x="24" y="24" width="976" height="976" rx="224" fill="#fbfaff"/>
+  </g>
+  <g id="K-plus-monogram">
+    <path id="Geometric-K" d="M216 264H312Q320 264 320 272V478L516 267Q519 264 523 264H646Q657 264 650 272L438 506L666 746Q677 760 660 760H535Q530 760 526 756L320 540V752Q320 760 312 760H216Q208 760 208 752V272Q208 264 216 264Z" fill="#35365f"/>
+    <path id="Coral-plus" d="M730 288H782Q788 288 788 294V364H858Q864 364 864 370V422Q864 428 858 428H788V498Q788 504 782 504H730Q724 504 724 498V428H654Q648 428 648 422V370Q648 364 654 364H724V294Q724 288 730 288Z" fill="#ff855f"/>
+  </g>
 </svg>

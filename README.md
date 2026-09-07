@@ -11,7 +11,7 @@
 このREADMEはリポジトリの最新実装を説明しています。各バージョンの公開状況は [変更履歴](./CHANGELOG.md) にまとめています。
 現在のリポジトリのバージョンは **1.6.0** です。ストア公開済みバージョンとは異なる場合があります。
 
-1.6.0にFirefox 140以降（デスクトップ）への対応を含めました。両ストアへは未提出で、Firefox向けの署名済み配布版はまだありません。審査提出済みのChrome版1.5.0とは別の配布物です。[ビルドと確認手順](./docs/firefox-verification.md)、[Firefoxへの公開手順](./docs/firefox-publishing.md)、[審査用の再ビルド手順](./BUILDING.md)を参照してください。
+1.6.0にFirefox 140以降（デスクトップ）への対応を含めました。Chrome版1.6.0は2026-09-07に審査へ提出済みです。公開中は1.5.0で、1.6.0は審査合格後に自動公開されます。Firefox版は未提出で、署名済み配布版はまだありません。[Chrome提出記録](./docs/chrome-submission-1.6.0.md)を参照してください。[ビルドと確認手順](./docs/firefox-verification.md)、[Firefoxへの公開手順](./docs/firefox-publishing.md)、[審査用の再ビルド手順](./BUILDING.md)を参照してください。
 
 ## できること
 

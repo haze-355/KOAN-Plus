@@ -2,7 +2,7 @@
   "name": "koan-plus",
   "private": true,
   "version": "1.6.0",
-  "description": "A local-only academic dashboard for Osaka University KOAN and CLE.",
+  "description": "大阪大学のKOAN・CLEの課題、締切、休講・教室変更、連絡・掲示、成績をまとめて確認できる非公式の拡張機能です。",
   "type": "module",
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

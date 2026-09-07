@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="280" viewBox="0 0 440 280">
+    <title>KOAN Plus — KOAN・CLEの授業・課題・連絡をまとめて確認</title>
+    <defs><linearGradient id="Backdrop" x1="0" y1="0" x2="1" y2=".65"><stop stop-color="#181b2d"/><stop offset="1" stop-color="#303650"/></linearGradient></defs>
+    <rect width="440" height="280" fill="url(#Backdrop)"/>
+    <g fill="#fbfaff" font-family="Hiragino Sans, sans-serif">
+    <g transform="translate(26 25) scale(0.05078125)"><g id="Icon-background">
+    <rect x="24" y="24" width="976" height="976" rx="224" fill="#fbfaff"/>
+  </g>
+  <g id="K-plus-monogram">
+    <path id="Geometric-K" d="M216 264H312Q320 264 320 272V478L516 267Q519 264 523 264H646Q657 264 650 272L438 506L666 746Q677 760 660 760H535Q530 760 526 756L320 540V752Q320 760 312 760H216Q208 760 208 752V272Q208 264 216 264Z" fill="#35365f"/>
+    <path id="Coral-plus" d="M730 288H782Q788 288 788 294V364H858Q864 364 864 370V422Q864 428 858 428H788V498Q788 504 782 504H730Q724 504 724 498V428H654Q648 428 648 422V370Q648 364 654 364H724V294Q724 288 730 288Z" fill="#ff855f"/>
+  </g>
+</g>
+    <g id="Wordmark" data-cap-top="36" data-cap-height="31" data-plus-center-y="51.5">
+      <g transform="translate(96 36) scale(0.6458333333333334) translate(-4 -33)"><text x="0" y="80" font-family="Helvetica Neue, sans-serif" font-size="64" font-weight="700" letter-spacing="-2" fill="#fbfaff">KOAN</text></g>
+      <path d="M221.0591666666667 51.5H242.44916666666668M231.7541666666667 40.805V62.195" stroke="#ff916e" stroke-width="5.89"/>
+    </g>
+    <text x="28" y="125" font-size="18" fill="#b9bfd4" letter-spacing=".4">KOAN・CLEの</text>
+    <text x="27" y="169" font-size="27" font-weight="600" letter-spacing="-.9">授業・課題・連絡を</text>
+    <text x="27" y="207" font-size="27" font-weight="600" letter-spacing="-.9">まとめて確認。</text>
+    <text x="28" y="253" font-size="11.5" fill="#b9bfd4">大阪大学向けの非公式拡張機能</text>
+  </g>
+  </svg>
