@@ -5,7 +5,8 @@
   "description": "大阪大学のKOAN・CLEの課題、締切、休講・教室変更、連絡・掲示、成績をまとめて確認できる非公式の拡張機能です。",
   "type": "module",
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": "^20.19.0 || >=22.12.0",
+    "npm": "11.4.2"
   },
   "scripts": {
     "dev": "vite",
@@ -20,7 +21,9 @@
     "demo:store": "npm run build && node scripts/store-demo/serve.mjs",
     "build:firefox": "node scripts/sync-manifest.mjs && tsc -b && vite build --outDir dist-firefox && node scripts/prepare-firefox-build.mjs && node scripts/build-notices.mjs dist-firefox",
     "zip:firefox": "npm run build:firefox && node scripts/build-zip.mjs dist-firefox koan-plus-firefox.zip",
-    "test:ui:firefox": "playwright test --project=firefox"
+    "test:ui:firefox": "playwright test --project=firefox",
+    "doctor": "node scripts/environment-doctor.mjs",
+    "check": "npm run typecheck && npm test"
   },
   "dependencies": {
     "dompurify": "^3.4.14",
@@ -38,7 +41,8 @@
     "fflate": "^0.8.3",
     "typescript": "^6.0.3",
     "vite": "^8.0.16",
-    "vitest": "^4.1.10"
+    "vitest": "4.1.11"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "packageManager": "npm@11.4.2"
 }

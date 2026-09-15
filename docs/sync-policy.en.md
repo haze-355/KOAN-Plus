@@ -23,10 +23,8 @@ expensive synchronization tasks.
   tabs or tabs moved to unrelated sites are replaced; successful authentication
   releases ownership. Polling deadlines and synchronization backoff are unchanged.
 - KOAN checks the current login state immediately. While awaiting login, it
-  checks the portal every five seconds for up to 90 seconds. Completion may be
-  detected up to approximately four seconds later than with the previous
-  one-second interval. Local tab-close checks still run every second. Academic
-  data refresh intervals and CLE authentication polling are unchanged.
+  checks the portal every five seconds for up to 90 seconds. It checks locally
+  every second whether the authentication tab has closed.
 - Dashboard refresh fetches only the categories whose cache lifetime has expired.
 - KOAN refreshes reuse category caches: this week's class changes and unread
   bulletins use a short interval, survey listings and the current schedule use
@@ -73,6 +71,13 @@ that would be discarded immediately after reaching the traversal limit.
 
 ## Explicit retries
 
-A user-initiated retry can resume one minute after the previous attempt. Automatic retries retain increasing delays after failures. Both retain cross-tab exclusion and resource-specific request limits.
+A user-initiated retry can shorten the dashboard scheduler's wait to one minute,
+but resource-specific limits still apply. It does not guarantee a university
+request after one minute. Bulletin snapshot sync requires at least ten minutes
+between attempts and six hours after a completed sync. Active work in another
+tab must also finish before a new sync starts.
+
+Automatic retries wait longer after repeated failures. Both manual and automatic
+retries preserve cross-tab exclusion and resource-specific waiting periods.
 
 See [sync.ts](../src/sync.ts), [koan.ts](../src/koan.ts), and [cle.ts](../src/cle.ts).

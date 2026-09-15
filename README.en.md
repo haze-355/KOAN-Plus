@@ -6,10 +6,11 @@
 
 KOAN Plus is an **unofficial browser extension for viewing Osaka University's KOAN and CLE information together**. Check assignment deadlines, class cancellations, room changes, announcements, and grades in a desktop dashboard.
 
-It leaves the ordinary KOAN and CLE page designs unchanged. The source code is available under the MIT license. This README describes the latest repository implementation; version and publication status are recorded in the [changelog](./CHANGELOG.md).
-The repository version is **1.6.0**; the published store version may differ.
+It leaves the ordinary KOAN and CLE page designs unchanged. The source code is available under the MIT license. This README describes repository version **1.6.0**, which supports Chrome and desktop Firefox 140+. The published store version may differ.
 
-Version 1.6.0 includes desktop Firefox 140+ support. Chrome 1.6.0 was submitted for review on September 7, 2026, with automatic publication after approval. Chrome 1.5.0 remains the published version. Firefox has not been submitted, and no signed Firefox distribution is available yet. See the [Chrome submission record](./docs/chrome-submission-1.6.0.md) (Japanese). See the [verification guide](./docs/firefox-verification.md), [publication guide](./docs/firefox-publishing.md) (Japanese), and [source build instructions for reviewers](./BUILDING.md).
+**The September 7, 2026 record shows Chrome 1.5.0 published and 1.6.0 awaiting review.** Version 1.6.0 was submitted with automatic publication after approval. Firefox had not been submitted as of that date. See the [changelog](./CHANGELOG.md) and [Chrome submission record](./docs/chrome-submission-1.6.0.md) (Japanese) for details, and the Chrome Web Store link above for current availability.
+
+For Firefox development and submission, see the [verification guide](./docs/firefox-verification.md), [publication guide](./docs/firefox-publishing.md) (Japanese), and [source build instructions for reviewers](./BUILDING.md).
 
 ## What you can do
 
@@ -49,16 +50,16 @@ University service changes or network conditions can delay or prevent retrieval.
 ## Data and login information
 
 - Academic data and settings stay in the browser you use. KOAN Plus does not send academic data or credentials to a developer-operated server and has no advertising, analytics, or automatic crash reporting.
-- The extension communicates with KOAN, CLE, and the university's authentication services to retrieve data and log in. It does not prefetch bulletin or message bodies.
+- The extension communicates with KOAN, CLE, and the university's authentication services to retrieve data and log in. It does not automatically retrieve KOAN bulletin bodies or CLE message bodies. CLE course announcements are separate; their bodies are retrieved and cached.
 - Auto-login and two-factor authentication assistance are optional. Saved credentials are encrypted locally, but the key is available in the same environment; this does not protect against compromise of the device or extension runtime.
 - Storing two-factor authentication information on the login device can weaken MFA protection. Review the university rules that apply to you and the [terms](./TERMS.md) before enabling it. Use a device you control.
-- Contact (お問い合わせ) opens Google Forms and sends the extension version and browser User-Agent to Google as prefilled URL parameters. Filling in and submitting the form is optional.
+- Opening Contact (お問い合わせ) sends the extension version to Google Forms. The browser User-Agent, which includes browser and OS information, is always included in Chrome and is included in Firefox only when the corresponding data permission is granted. Filling in and submitting the form is optional.
 
 See the bilingual [privacy policy](./PRIVACY.md) for data categories, permission purposes, storage, and deletion. Cache deletion in Settings → Data management preserves saved login information, MFA settings, theme, and terms acceptance. Credentials and MFA have separate deletion controls.
 
 ## Install from source
 
-Use Node.js 20.x starting at 20.19.0, or Node.js 22.12.0 or later, with npm. The extension declares Chrome 102 as its minimum version; other Chromium browsers may behave differently.
+Use the Node.js and npm versions described in the [development environment](./CONTRIBUTING.md#開発環境). Supported versions are recorded in `package.json`; `.nvmrc` selects the local development version of Node.js. The following instructions are for Chrome, with a declared minimum version of 102. Other Chromium browsers may behave differently.
 
 ```sh
 git clone https://github.com/haze-355/KOAN-Plus.git
@@ -93,6 +94,6 @@ The development server alone cannot reproduce all extension authentication and t
 
 ## License and terms
 
-The code is licensed under [MIT](./LICENSE). Use of the extension is subject to [TERMS.md](./TERMS.md). KOAN Plus is not provided, endorsed, or guaranteed by Osaka University. Changes to KOAN, CLE, or the authentication services may stop features from working.
+The code and accompanying documentation are licensed under [MIT](./LICENSE). [TERMS.md](./TERMS.md) describes conditions for accessing university services and related matters; it does not restrict the rights to use, modify, or redistribute the software granted by MIT. KOAN Plus is not provided, endorsed, or guaranteed by Osaka University. Changes to KOAN, CLE, or the authentication services may stop features from working.
 
 See [Third-party notices](./THIRD_PARTY_NOTICES.md) for dependency and icon attribution. Builds and distribution ZIPs include the project license and full third-party license texts.

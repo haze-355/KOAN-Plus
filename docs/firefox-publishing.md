@@ -1,6 +1,6 @@
 # Firefox Add-onsへの公開（1.6.0）
 
-2026-09-06時点の公開準備手順です。1.6.0のソース統合・タグと、Mozillaへの提出・署名・ストア公開は別です。この文書の作成では提出していません。
+Firefox Add-ons（AMO）への提出に使うファイルと操作を説明します。以下の生成例は、2026-09-06に用意した `v1.6.0` タグの候補を再現するものです。記録上の提出・公開状況は [変更履歴](../CHANGELOG.md) を参照してください。
 
 ## 用意するファイル
 
@@ -8,20 +8,25 @@
 | --- | --- |
 | `koan-plus-1.6.0-firefox.zip` | AMOの拡張機能本体のアップロード欄 |
 | `koan-plus-1.6.0-source.zip` | 審査用ソースコードのアップロード欄。`BUILDING.md`とlockfileを含む |
-| `koan-plus-1.6.0-chrome.zip` | Chrome Web Store専用。AMOにはアップロードしない |
 
-審査提出済みの1.5.0の `koan-plus.zip` と `v1.5.0` タグは保持します。1.6.0の生成例は次のとおりです。
+本体ZIPと審査用ソースZIPには、同じコミットのコードを使います。既存の配布ZIPとタグは保持し、再現用ファイルは空の作業フォルダへ出力してください。
+
+まず、リポジトリで対象タグのソースZIPを作成します。出力名のファイルが既にある場合は、既存ファイルを上書きしない別の出力先を指定します。
 
 ```sh
-npm ci
-npm run build
-node scripts/build-zip.mjs dist koan-plus-1.6.0-chrome.zip
-npm run build:firefox
-node scripts/build-zip.mjs dist-firefox koan-plus-1.6.0-firefox.zip
 git archive --format=zip --prefix=koan-plus-1.6.0/ --output=koan-plus-1.6.0-source.zip v1.6.0
 ```
 
-ソースZIPはタグに含まれるファイルだけから作成します。作業フォルダ全体や `node_modules`、`.env`、ブラウザプロファイルを圧縮しないでください。
+このZIPを空の作業フォルダへ展開します。展開した `koan-plus-1.6.0/` に移動し、同梱の `BUILDING.md` に記録されたNode.js・npmを用意してから、次を実行します。
+
+```sh
+npm ci
+npm run build:firefox
+node scripts/build-zip.mjs dist-firefox ../koan-plus-1.6.0-firefox.zip
+```
+
+新しいコミットから候補を作る場合も、そのコミットのソースZIPを展開してビルドし、ビルド環境と検証結果を記録します。作業フォルダ全体や `node_modules`、`.env`、ブラウザプロファイルをソースZIPへ含めないでください。Chrome版の提出物は [Chrome提出記録](./chrome-submission-1.6.0.md) にあり、このFirefox候補とはソースが異なります。
+
 Viteで変換・結合したコードを配布するため、Mozillaには対応する元のソースと再ビルド手順の提出が必要です。[Mozilla: Source code submission](https://extensionworkshop.com/documentation/publish/source-code-submission/)
 
 ## ストアでの操作
@@ -74,9 +79,9 @@ See PRIVACY.md for the complete data flows and docs/firefox-verification.md for
 what has and has not been tested. Android is not supported.
 ```
 
-## 提出前の残確認と公開後
+## 提出前の未確認項目と公開後の確認
 
 - 最低対応版Firefox 140、実ファイルの個別・一括保存、MFA自動入力・登録には未確認項目があります。実施範囲は [検証記録](./firefox-verification.md) を参照してください。
 - ローカルの `web-ext lint` とAMOの検証結果は別です。既知の警告の説明も検証記録にありますが、審査通過を保証するものではありません。
 - 掲載画像を使う場合は合成データで作成し、実際の学生情報や認証画面を掲載しません。
-- 公開できたら署名済み版を通常のFirefoxへインストールして確認し、READMEなどにAMOの公開URLと公開状態を反映します。Chrome 1.6.0の提出はChrome Web Storeで別途行います。
+- 公開できたら署名済み版を通常のFirefoxへインストールして確認し、READMEなどにAMOの公開URLと確認日を記録します。Chrome版の提出・公開状況は、Firefox版とは別に管理します。

@@ -4,6 +4,11 @@ These instructions are for Mozilla reviewers and developers. No university
 account, credentials, environment files, private dependencies, or build secrets
 are needed. All dependencies are resolved from the included `package-lock.json`.
 
+This is the recorded build recipe for the Firefox candidate at tag `v1.6.0`.
+Use that matching source archive to reproduce the candidate. For development on
+the current branch, use [CONTRIBUTING.md](./CONTRIBUTING.md) and its environment
+requirements; later source and toolchain changes are not part of this record.
+
 ## Environment
 
 The submitted-package candidate is built with:
@@ -52,10 +57,12 @@ After installing dependencies:
 
 ```sh
 npm run typecheck
-npm test
 npx playwright install chromium firefox
 npm run test:all
 ```
+
+`test:all` runs the unit tests and both browser UI suites. For a scoped change,
+select the checks described in [CONTRIBUTING.md](./CONTRIBUTING.md#変更に応じた検証).
 
 Tests use synthetic academic data and browser API substitutes. They do not
 contact university services or contain usable credentials. Browser downloads

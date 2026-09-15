@@ -1,6 +1,6 @@
 # Privacy Policy / プライバシーポリシー
 
-Last updated / 最終更新日: 2026-09-06
+Last updated / 最終更新日: 2026-09-15
 
 ## English
 
@@ -24,8 +24,9 @@ KOAN Plus may process and store:
   course material file names and download
   URLs, and update timestamps;
 - display preferences and refresh coordination timestamps;
-- when auto-login is enabled, the university ID, password, TOTP secret,
-  temporary cancellation code, and MFA consent state.
+- when auto-login or multi-factor authentication (MFA) assistance is configured,
+  the university ID, password, secret used to generate time-based codes (TOTP
+  secret), temporary cancellation code, and MFA consent state.
 
 Course announcements are separate from CLE messages. Their bodies are retrieved
 and cached for display; CLE message bodies and KOAN bulletin bodies are not
@@ -54,9 +55,9 @@ domains:
 Requests use the user's existing browser session. The browser manages the session
 cookies; KOAN Plus does not request the cookies permission.
 
-When auto-login or MFA is enabled, the university ID, password, TOTP secret,
-and generated authentication codes may be sent to the Osaka University
-authentication services required for the requested operation. In Firefox,
+Auto-login sends the university ID and password to the required Osaka University
+authentication services. MFA assistance generates authentication codes locally
+from the saved TOTP secret and sends those codes for authentication. In Firefox,
 this transmission is performed only while the optional `authenticationInfo`
 data permission is granted. If that permission is denied or revoked, KOAN Plus
 does not provide the credentials or codes to authentication pages, while the
@@ -114,36 +115,36 @@ KOAN Plus requests:
 
 ### 概要
 
-KOAN Plus は、ユーザーがローカルにインストールする Chrome / Firefox 対応の
+KOAN Plus は、ユーザーの端末にインストールする Chrome / Firefox 対応の
 ブラウザ拡張機能です。
 開発者が運営するバックエンド、アクセス解析、広告、自動クラッシュレポートは
-ありません。学務情報と認証情報はユーザーの端末上で処理され、要求された操作に
-必要な大阪大学のサービスにのみ送信されます。ただし、任意で利用する Google Forms
-のお問い合わせ機能は例外であり、後述します。
+ありません。学務情報と認証情報はユーザーの端末上で処理し、操作に必要な大阪大学の
+サービスだけに送信します。ただし、利用者が任意のお問い合わせフォームに入力・送信する
+情報は Google Forms でも処理されます。詳しくは後述の「ネットワーク通信」に記載しています。
 
 ### 端末上で処理・保存するデータ
 
 KOAN Plus は、次のデータを処理・保存する場合があります。
 
 - KOANの時間割、履修科目、休講・教室変更、アンケート名・回答状態・実施期間、
-  掲示メタデータ、成績、単位、GPA、更新日時
+  掲示の件名・掲載日などの情報、成績、単位、GPA、更新日時
 - CLEの科目対応、課題名、期限、提出・採点状態、未読メッセージ数、授業の連絡事項の件名・本文・日時、
   配布資料のファイル名・取得用URL、更新日時
 - 表示設定、更新制御用のタイムスタンプ
-- 自動ログインを有効にした場合の学内個人ID、パスワード、TOTPシークレット、
-  一時解除コード、MFA同意状態
+- 自動ログインや多要素認証（MFA）の補助を設定した場合の大阪大学個人ID、パスワード、
+  認証コードの生成に使う秘密鍵（TOTPシークレット）、一時解除コード、MFAの利用への同意状態
 
 CLEの授業の連絡事項はメッセージとは別の情報で、表示のために本文も取得・保存します。
 CLEメッセージ本文とKOAN掲示本文の事前取得は行いません。
 
-ダッシュボードデータと表示設定は、拡張機能オリジンの `localStorage` に保存されます。
-認証情報とMFA情報は AES-GCM（256-bit）で暗号化され、非エクスポート鍵とともに
-IndexedDB に保存されます。タブと更新の制御に使う一時情報は、ブラウザ拡張機能の
+ダッシュボードのデータと表示設定は、拡張機能専用の `localStorage` に保存されます。
+認証情報とMFA情報は AES-GCM（256ビット）で暗号化し、書き出し不可の暗号鍵とともに
+IndexedDB に保存します。タブと更新の制御に使う一時情報は、ブラウザ拡張機能の
 セッションストレージ（`chrome.storage.session`）に保存されます。
 
-この暗号化は、平文を偶発的に閲覧されることを防ぐためのものです。暗号鍵と暗号文は
-同じ拡張機能実行環境から利用できるため、端末、ブラウザプロファイル、拡張機能実行環境
-が侵害された場合の保護にはなりません。
+この暗号化は、保存データをそのまま開いて認証情報を読まれることを防ぐためのものです。
+暗号鍵と暗号化したデータは同じ拡張機能から利用できるため、端末やブラウザプロファイル、
+拡張機能の実行環境が侵害された場合の保護にはなりません。
 
 ### ネットワーク通信
 
@@ -157,25 +158,25 @@ IndexedDB に保存されます。タブと更新の制御に使う一時情報�
 通信にはブラウザの既存セッションを利用します。セッションクッキーはブラウザが管理し、
 KOAN Plus は Cookie API の権限を要求しません。
 
-自動ログインまたはMFAを有効にした場合、大学個人ID、パスワード、TOTPシークレット、
-生成した認証コードは、要求された操作に必要な大阪大学の認証サービスへ送信される場合が
-あります。Firefoxでは、optionalな `authenticationInfo` データ権限が許可されている間だけ
-この送信を行います。許可が拒否または取り消された場合、KOAN Plusは認証ページへ認証情報や
+自動ログインでは、大阪大学個人IDとパスワードを大学の認証サービスへ送信します。
+MFAの補助では、保存したTOTPシークレットから端末内で認証コードを生成し、そのコードを
+認証に使います。Firefoxでは、任意のデータ権限 `authenticationInfo` が許可されている間だけ
+認証情報やコードを送信します。許可が拒否または取り消された場合、KOAN Plusは認証ページへ認証情報や
 コードを渡しません。暗号化済みのローカルデータは保持されます。
 
-自動ログインが有効な場合、表示中かつオンラインのダッシュボードは、成績と掲示
-メタデータを含む保存期限切れの学務情報を自動同期します。取得結果はタブ間で
+自動ログインが有効な場合、ダッシュボードを表示していてオンラインの間に、成績や掲示の
+一覧情報を含む古くなった学務情報を自動更新します。取得結果はタブ間で
 再利用します。非表示・オフライン中は新しい自動同期を開始しません。手動更新も
 利用でき、自動ログインを停止すると定期的な自動同期も停止します。
 
 サイドバーの「お問い合わせ」は `docs.google.com` の Google Forms を開きます。
 リンクを開くと、KOAN Plusのバージョンが常にフォームの事前入力用URLパラメータとして
-Googleに送信されます。Firefoxでは、optionalな `technicalAndInteraction` データ権限が
-許可されている場合だけブラウザのUser-Agentを付加します。未許可または確認できない場合、
+Googleに送信されます。ブラウザやOSの情報を含むUser-Agentは、Firefoxでは任意のデータ権限
+`technicalAndInteraction` が許可されている場合だけ付加します。許可されていない場合や、許可を確認できない場合は、
 User-Agentパラメータは付加しません。Chromeでは従来どおりUser-Agentを付加します。ユーザーが
-フォームに入力して送信した情報も、Googleの適用される規約とプライバシーポリシーに基づいて
+フォームに入力して送信した情報も、Googleの規約とプライバシーポリシーに基づいて
 処理されます。
-フォームは任意であり、自動的に開かれることはありません。
+お問い合わせの利用は任意で、フォームが自動的に開くことはありません。
 
 ### メンテナーが自動収集しないデータ
 
@@ -203,6 +204,6 @@ KOAN Plus は次の権限を要求します。
 - `downloads`: CLEの配布資料をユーザーのダウンロードフォルダへ保存するため
 - `downloads.ui`（Chromeのみ）: 一括保存中に Chrome のダウンロード表示を一時的に非表示にし、
   ファイルごとの点滅を防ぐため
-- Firefoxのデータ収集権限: 認証情報用のoptionalな `authenticationInfo` と、
-  お問い合わせフォームへUser-Agentを付加するためのoptionalな `technicalAndInteraction`
+- Firefoxの任意のデータ収集権限: 認証情報用の `authenticationInfo` と、
+  お問い合わせフォームへUser-Agentを付加するための `technicalAndInteraction`
 - 上記4つの大阪大学ドメインに対するホスト権限

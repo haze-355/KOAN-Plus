@@ -33,10 +33,10 @@ jobs:
           cache: npm
 
       - name: Install locked dependencies
-        run: npm ci
+        run: npm install --global npm@11.4.2 && npm ci
 
-      - name: Audit production dependencies
-        run: npm audit --omit=dev --audit-level=high
+      - name: Audit runtime and development dependencies
+        run: npm audit --audit-level=moderate
 
       - name: Typecheck
         run: npm run typecheck
@@ -72,7 +72,7 @@ jobs:
           cache: npm
 
       - name: Install locked dependencies
-        run: npm ci
+        run: npm install --global npm@11.4.2 && npm ci
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps ${{ matrix.browser }}
